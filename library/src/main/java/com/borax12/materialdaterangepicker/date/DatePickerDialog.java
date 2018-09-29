@@ -94,6 +94,7 @@ public class DatePickerDialog extends DialogFragment implements
     private static final String KEY_ACCENT = "accent";
     private static final String KEY_VIBRATE = "vibrate";
     private static final String KEY_DISMISS = "dismiss";
+    private static final String KEY_AUTOHIGHLIGHT = "autohighlight";
 
     private static final int DEFAULT_START_YEAR = 1900;
     private static final int DEFAULT_END_YEAR = 2100;
@@ -311,6 +312,7 @@ public class DatePickerDialog extends DialogFragment implements
         outState.putInt(KEY_ACCENT, mAccentColor);
         outState.putBoolean(KEY_VIBRATE, mVibrate);
         outState.putBoolean(KEY_DISMISS, mDismissOnPause);
+        outState.putBoolean(KEY_AUTOHIGHLIGHT, mAutoHighlight);
     }
 
     @Override
@@ -387,6 +389,7 @@ public class DatePickerDialog extends DialogFragment implements
             mAccentColor = savedInstanceState.getInt(KEY_ACCENT);
             mVibrate = savedInstanceState.getBoolean(KEY_VIBRATE);
             mDismissOnPause = savedInstanceState.getBoolean(KEY_DISMISS);
+            mAutoHighlight = savedInstanceState.getBoolean(KEY_AUTOHIGHLIGHT);
         }
 
         mDayPickerView = new com.borax12.materialdaterangepicker.date.SimpleDayPickerView(activity, this);
@@ -648,7 +651,7 @@ public class DatePickerDialog extends DialogFragment implements
             okButton.setTextColor(ContextCompat.getColor(getActivity(), R.color.range_done_text_color_disabled));
         } else {
             okButton.setEnabled(true);
-            okButton.setTextColor(ContextCompat.getColor(getActivity(), R.color.range_button_color));
+            okButton.setTextColor(mAccentColor);
         }
 
         mSelectedMonthTextView.setText(mCalendar.getDisplayName(Calendar.MONTH, Calendar.SHORT,
@@ -660,11 +663,11 @@ public class DatePickerDialog extends DialogFragment implements
         mYearView.setText(YEAR_FORMAT.format(mCalendar.getTime()));
         mYearViewEnd.setText(YEAR_FORMAT.format(mCalendarEnd.getTime()));
         mTitleTab1.setText((startTitle != null && !startTitle.isEmpty()) ?
-                startTitle + " " + DateUtils.formatDateTime(getActivity(), mCalendar.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE) :
-                getActivity().getResources().getString(R.string.range_from) + " " + DateUtils.formatDateTime(getActivity(), mCalendar.getTimeInMillis(), DateUtils.FORMAT_NUMERIC_DATE));
+                startTitle + " " + DateUtils.formatDateTime(getActivity(), mCalendar.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE | DateUtils.FORMAT_NO_YEAR) :
+                getActivity().getResources().getString(R.string.range_from) + " " + DateUtils.formatDateTime(getActivity(), mCalendar.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE | DateUtils.FORMAT_NO_YEAR));
         mTitleTab2.setText((endTitle != null && !endTitle.isEmpty()) ?
-                endTitle + " " + DateUtils.formatDateTime(getActivity(), mCalendarEnd.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE) :
-                getActivity().getResources().getString(R.string.range_to) + " " + DateUtils.formatDateTime(getActivity(), mCalendarEnd.getTimeInMillis(), DateUtils.FORMAT_NUMERIC_DATE));
+                endTitle + " " + DateUtils.formatDateTime(getActivity(), mCalendarEnd.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE | DateUtils.FORMAT_NO_YEAR) :
+                getActivity().getResources().getString(R.string.range_to) + " " + DateUtils.formatDateTime(getActivity(), mCalendarEnd.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE | DateUtils.FORMAT_NO_YEAR));
 
 
         // Accessibility.
