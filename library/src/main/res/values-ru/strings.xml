@@ -43,4 +43,5 @@
 
 	<string name="range_from">ОТ</string>
 	<string name="range_to">ДО</string>
+	<string name="range_next">Далее</string>
 </resources>

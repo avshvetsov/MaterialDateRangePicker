@@ -18,7 +18,7 @@ package com.borax12.materialdaterangepicker.date;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.support.v4.app.DialogFragment;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -118,6 +118,7 @@ public class DatePickerDialog extends DialogFragment implements
     private TextView mSelectedMonthTextView;
     private TextView mSelectedDayTextView;
     private TextView mYearView;
+    private Button okButton;
     private com.borax12.materialdaterangepicker.date.DayPickerView mDayPickerView;
     private com.borax12.materialdaterangepicker.date.YearPickerView mYearPickerView;
 
@@ -154,6 +155,8 @@ public class DatePickerDialog extends DialogFragment implements
     private String mSelectYear;
 
     private TabHost tabHost;
+    private TextView mTitleTab1;
+    private TextView mTitleTab2;
     private LinearLayout mMonthAndDayViewEnd;
     private TextView mSelectedMonthTextViewEnd;
     private TextView mSelectedDayTextViewEnd;
@@ -324,14 +327,19 @@ public class DatePickerDialog extends DialogFragment implements
 
         TabHost.TabSpec startDatePage = tabHost.newTabSpec("start");
         startDatePage.setContent(R.id.start_date_group);
-        startDatePage.setIndicator((startTitle != null && !startTitle.isEmpty()) ? startTitle : activity.getResources().getString(R.string.range_from));
+        startDatePage.setIndicator((startTitle != null && !startTitle.isEmpty()) ?
+                startTitle : getActivity().getResources().getString(R.string.range_from));
 
         TabHost.TabSpec endDatePage = tabHost.newTabSpec("end");
         endDatePage.setContent(R.id.range_end_date_group);
-        endDatePage.setIndicator((endTitle!=null&&!endTitle.isEmpty())?endTitle:activity.getResources().getString(R.string.range_to));
+        endDatePage.setIndicator((endTitle!=null && !endTitle.isEmpty()) ?
+                endTitle : activity.getResources().getString(R.string.range_to));
 
         tabHost.addTab(startDatePage);
         tabHost.addTab(endDatePage);
+
+        mTitleTab1 = ((TextView)tabHost.getTabWidget().getChildAt(0).findViewById(android.R.id.title));
+        mTitleTab2 = ((TextView)tabHost.getTabWidget().getChildAt(1).findViewById(android.R.id.title));
 
         mDayOfWeekView = (TextView) view.findViewById(R.id.range_date_picker_header);
         mMonthAndDayView = (LinearLayout) view.findViewById(R.id.range_date_picker_month_and_day);
@@ -423,18 +431,20 @@ public class DatePickerDialog extends DialogFragment implements
         animation2End.setDuration(ANIMATION_DURATION);
         mAnimatorEnd.setOutAnimation(animation2);
 
-        Button okButton = (Button) view.findViewById(R.id.range_ok);
+        okButton = (Button) view.findViewById(R.id.range_ok);
         okButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 tryVibrate();
-                if (mCallBack != null) {
+                if (tabHost.getCurrentTabTag() == "start") {
+                    tabHost.setCurrentTabByTag("end");
+                }else if (mCallBack != null) {
                     mCallBack.onDateSet(DatePickerDialog.this, mCalendar.get(Calendar.YEAR),
                             mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH),mCalendarEnd.get(Calendar.YEAR),
                             mCalendarEnd.get(Calendar.MONTH), mCalendarEnd.get(Calendar.DAY_OF_MONTH));
-                }
-                dismiss();
+                    dismiss();
+                }else dismiss();
             }
         });
         okButton.setTypeface(TypefaceHelper.get(activity, "Roboto-Medium"));
@@ -633,6 +643,13 @@ public class DatePickerDialog extends DialogFragment implements
             mDayOfWeekView.setText(mCalendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG,
                     Locale.getDefault()).toUpperCase(Locale.getDefault()));
         }
+        if (mCalendar.getTimeInMillis() > mCalendarEnd.getTimeInMillis()) {
+            okButton.setEnabled(false);
+            okButton.setTextColor(ContextCompat.getColor(getActivity(), R.color.range_done_text_color_disabled));
+        } else {
+            okButton.setEnabled(true);
+            okButton.setTextColor(ContextCompat.getColor(getActivity(), R.color.range_button_color));
+        }
 
         mSelectedMonthTextView.setText(mCalendar.getDisplayName(Calendar.MONTH, Calendar.SHORT,
                 Locale.getDefault()).toUpperCase(Locale.getDefault()));
@@ -642,6 +659,13 @@ public class DatePickerDialog extends DialogFragment implements
         mSelectedDayTextViewEnd.setText(DAY_FORMAT.format(mCalendarEnd.getTime()));
         mYearView.setText(YEAR_FORMAT.format(mCalendar.getTime()));
         mYearViewEnd.setText(YEAR_FORMAT.format(mCalendarEnd.getTime()));
+        mTitleTab1.setText((startTitle != null && !startTitle.isEmpty()) ?
+                startTitle + " " + DateUtils.formatDateTime(getActivity(), mCalendar.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE) :
+                getActivity().getResources().getString(R.string.range_from) + " " + DateUtils.formatDateTime(getActivity(), mCalendar.getTimeInMillis(), DateUtils.FORMAT_NUMERIC_DATE));
+        mTitleTab2.setText((endTitle != null && !endTitle.isEmpty()) ?
+                endTitle + " " + DateUtils.formatDateTime(getActivity(), mCalendarEnd.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_NUMERIC_DATE) :
+                getActivity().getResources().getString(R.string.range_to) + " " + DateUtils.formatDateTime(getActivity(), mCalendarEnd.getTimeInMillis(), DateUtils.FORMAT_NUMERIC_DATE));
+
 
         // Accessibility.
         long millis = mCalendar.getTimeInMillis();

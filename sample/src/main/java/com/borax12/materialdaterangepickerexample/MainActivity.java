@@ -47,14 +47,20 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 Calendar now = Calendar.getInstance();
+                Calendar start = Calendar.getInstance();
+                start.add(Calendar.DAY_OF_YEAR, -7);
                 DatePickerDialog dpd = com.borax12.materialdaterangepicker.date.DatePickerDialog.newInstance(
                         MainActivity.this,
+                        start.get(Calendar.YEAR),
+                        start.get(Calendar.MONTH),
+                        start.get(Calendar.DAY_OF_MONTH),
                         now.get(Calendar.YEAR),
                         now.get(Calendar.MONTH),
                         now.get(Calendar.DAY_OF_MONTH)
                 );
                 dpd.setAutoHighlight(mAutoHighlight);
-                dpd.show(getSupportFragmentManager(), "Datepickerdialog");
+                dpd.setMaxDate(now);
+                dpd.show(getFragmentManager(), "Datepickerdialog");
             }
         });
 
@@ -82,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onResume() {
         super.onResume();
-        DatePickerDialog dpd = (DatePickerDialog) getSupportFragmentManager().findFragmentByTag("Datepickerdialog");
+        DatePickerDialog dpd = (DatePickerDialog) getFragmentManager().findFragmentByTag("Datepickerdialog");
         if(dpd != null) dpd.setOnDateSetListener(this);
     }
 
