@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements
                 );
                 dpd.setAutoHighlight(mAutoHighlight);
                 dpd.setMaxDate(now);
-                dpd.show(getFragmentManager(), "Datepickerdialog");
+                dpd.show(getSupportFragmentManager(), "Datepickerdialog");
             }
         });
 
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onResume() {
         super.onResume();
-        DatePickerDialog dpd = (DatePickerDialog) getFragmentManager().findFragmentByTag("Datepickerdialog");
+        DatePickerDialog dpd = (DatePickerDialog) getSupportFragmentManager().findFragmentByTag("Datepickerdialog");
         if(dpd != null) dpd.setOnDateSetListener(this);
     }
 
